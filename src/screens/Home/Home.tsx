@@ -17,6 +17,7 @@ import { LogoBatSinal } from '../../componentes/LogoBatSinal/LogoBatSinal';
 const App = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [logoSize, setLogoSize] = useState(200); // Tamanho inicial do logo
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -33,6 +34,11 @@ const App = () => {
     }
   };
 
+  const handleActivateBatSinal = () => {
+    setFormVisible(true);
+    setLogoSize(50); // Diminui o tamanho do logo
+  };
+
   const handleCancel = () => {
     // Limpa os campos do formulário e oculta o formulário
     setName('');
@@ -42,12 +48,13 @@ const App = () => {
     setIssue('');
     setClothesPreference('dark');
     setFormVisible(false);
+    setLogoSize(150);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <LogoBatSinal />
+        <LogoBatSinal logoWidth = {logoSize} />
         {!formVisible && (
           <TouchableOpacity
             style={styles.button}

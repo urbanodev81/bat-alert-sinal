@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
     },
     batLogo:{
         resizeMode:'contain',
-        width: '100%',
+        // width: '100%',
         marginBottom: 4,
     },
 
