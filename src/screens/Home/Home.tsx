@@ -11,24 +11,43 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import email from 'react-native-email'; // Importação do react-native-email
 import { LogoBatSinal } from '../../componentes/LogoBatSinal/LogoBatSinal';
 
 const App = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [emailSentModalVisible, setEmailSentModalVisible] = useState(false); // Novo estado para o modal de email enviado
   const [logoSize, setLogoSize] = useState(200); // Tamanho inicial do logo
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const [emailField, setEmailField] = useState('');
   const [issue, setIssue] = useState('');
   const [clothesPreference, setClothesPreference] = useState('dark');
 
   const handleFormSubmit = () => {
-    if (name && address && phone && email && issue) {
-      setModalVisible(true);
+    if (name && address && phone && emailField && issue) {
+      const to = ['teste@dominio.com.br']; // Endereço de email do destinatário
+      email(to, {
+        subject: 'Detalhes do Bat Sinal',
+        body: `
+          Nome: ${name}
+          Endereço: ${address}
+          Telefone: ${phone}
+          Email: ${emailField}
+          O que está acontecendo: ${issue}
+          Preferência de roupas: ${clothesPreference === 'dark' ? 'Escuras' : 'Coloridas'}
+        `,
+      })
+        .then(() => {
+          setEmailSentModalVisible(true); // Exibe o modal de email enviado com sucesso
+        })
+        .catch((error) => {
+          Alert.alert('Erro', 'Houve um erro ao enviar o email.');
+          console.error(error);
+        });
     } else {
       Alert.alert('Por favor, preencha todos os campos obrigatórios.');
     }
@@ -40,11 +59,10 @@ const App = () => {
   };
 
   const handleCancel = () => {
-    // Limpa os campos do formulário e oculta o formulário
     setName('');
     setAddress('');
     setPhone('');
-    setEmail('');
+    setEmailField('');
     setIssue('');
     setClothesPreference('dark');
     setFormVisible(false);
@@ -54,11 +72,11 @@ const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <LogoBatSinal logoWidth = {logoSize} />
+        <LogoBatSinal logoWidth={logoSize} />
         {!formVisible && (
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setFormVisible(true)}
+            onPress={handleActivateBatSinal}
           >
             <Text style={styles.buttonText}>Ativar Bat Sinal</Text>
           </TouchableOpacity>
@@ -94,8 +112,8 @@ const App = () => {
             <Text style={styles.label}>Email:</Text>
             <TextInput
               style={styles.input}
-              value={email}
-              onChangeText={setEmail}
+              value={emailField}
+              onChangeText={setEmailField}
               placeholder="Digite seu email"
               keyboardType="email-address"
             />
@@ -144,6 +162,23 @@ const App = () => {
             <View style={styles.modalContent}>
               <Text style={styles.modalText}>Ajuda está a caminho!</Text>
               <Button title="OK" onPress={() => setModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
+
+        {/* Modal de email enviado */}
+        <Modal
+          transparent={true}
+          visible={emailSentModalVisible}
+          onRequestClose={() => setEmailSentModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>Email enviado com sucesso!</Text>
+              <Button
+                title="OK"
+                onPress={() => setEmailSentModalVisible(false)}
+              />
             </View>
           </View>
         </Modal>
